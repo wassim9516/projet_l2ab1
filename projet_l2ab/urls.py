@@ -8,7 +8,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', lambda request: redirect('event_list')), 
     path('admin/', admin.site.urls),
-    path('planning/', include('benvoplanify.urls')),
+    path('benvoplanify/', include('benvoplanify.urls')),
 ]
 
 

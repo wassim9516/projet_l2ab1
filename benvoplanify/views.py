@@ -5,6 +5,7 @@ from .models import Event
 from .forms import EventForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
+from django.core.paginator import Paginator
 
 def register(request):
     if request.method == 'POST':
@@ -19,12 +20,16 @@ def register(request):
     else:
         form = UserCreationForm()  # Afficher un formulaire vide
 
-    return render(request, 'planning/register.html', {'form': form})
+    return render(request, 'benvoplanify/register.html', {'form': form})
 
 
 def event_list(request):
-    events = Event.objects.all()
-    return render(request, 'planning/event_list.html', {'events': events})
+    events = Event.objects.all()  # Récupère tous les événements
+    paginator = Paginator(events, 6)  # 6 événements par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'benvoplanify/event_list.html', {'page_obj': page_obj})
 
 def event_create(request):
     if request.method == 'POST':
@@ -34,12 +39,12 @@ def event_create(request):
             return redirect('event_list')
     else:
         form = EventForm()
-    return render(request, 'planning/event_form.html', {'form': form})
+    return render(request, 'benvoplanify/event_form.html', {'form': form})
 
 def event_detail(request,id):
     """ Affiche les détails d'un événement """
     event = get_object_or_404(Event, id=id)
-    return render(request, 'planning/detail.html', {'event': event})
+    return render(request, 'benvoplanify/detail.html', {'event': event})
 
 def event_delete(request, id):
     """ Supprime un événement """
@@ -47,7 +52,7 @@ def event_delete(request, id):
     if request.method == "POST":
         event.delete()
         return redirect('event_list')
-    return render(request, 'planning/event_confirm_delete.html', {'event': event})
+    return render(request, 'benvoplanify/event_confirm_delete.html', {'event': event})
 
 def event_edit(request, id):
     """ Modifie un événement existant """
@@ -59,4 +64,4 @@ def event_edit(request, id):
             return redirect('event_detail', id=id)
     else:
         form = EventForm(instance=event)
-    return render(request, 'planning/event_form.html', {'form': form})
+    return render(request, 'benvoplanify/event_form.html', {'form': form})

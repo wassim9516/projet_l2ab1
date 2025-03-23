@@ -6,9 +6,9 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.CharField(max_length=255,blank=True, null=True)
     def __str__(self):
-        return f"{self.title} ({self.start_time} - {self.end_time})"
+        return f"{self.title} ({self.start_time} - {self.end_time}) {self.location}"
 
 # Create your models here.
