@@ -1,26 +1,83 @@
 # planning/views.py
+from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 from os import login_tty
 from django.shortcuts import render, redirect,get_object_or_404
-from .models import Event
-from .forms import EventForm
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from .models import Event, Benevole
+from .forms import EventForm, BenevoleForm,Benevole
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login as auth_login, authenticate
 from django.core.paginator import Paginator
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .forms import CustomUserRegistrationForm
+
+def login_view(request):
+    """ page de connexion """
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return redirect('espace_perso')  
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'benvoplanify/login.html', {'form': form})
+
 
 def register(request):
+    """ inscription uitlisater """
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()  # Créer l'utilisateur
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)  # Connexion automatique après inscription
-            return redirect('event_list')  # Rediriger vers la liste des événements
+            user = form.save()  # Création de l'utilisateur
+            
+            # Création du profil Benevole lié à l'utilisateur
+            Benevole.objects.create(
+                user=user,
+                nom=form.cleaned_data['nom'],
+                prenom=form.cleaned_data['prenom'],
+                email=form.cleaned_data['email'],
+                date_naiss=form.cleaned_data['date_naiss'],
+            )
+
+            # Connexion automatique après inscription
+            auth_login(request, user)
+            return redirect('success')
     else:
-        form = UserCreationForm()  # Afficher un formulaire vide
+        form = CustomUserRegistrationForm()
 
     return render(request, 'benvoplanify/register.html', {'form': form})
+
+
+@login_required
+def modifier_benevole(request):
+    """ Modif les informations utilisateur """
+    user = request.user
+    benevole = Benevole.objects.get(user=user)
+
+    if request.method == 'POST':
+        form = BenevoleForm(request.POST, instance=benevole)
+        if form.is_valid():
+            form.save()
+            return redirect('espace_perso')  
+    else:
+        form = BenevoleForm(instance=benevole)
+
+    return render(request, 'benvoplanify/modifier_benevole.html', {'form': form})
+
+
+@login_required
+def espace_perso(request):
+    """ espace personnel """
+    user = request.user
+    benevole = get_object_or_404(Benevole, user=user)
+
+    context = {
+        'benevole': benevole,
+    }
+    return render(request, 'benvoplanify/espace_perso.html', context)
 
 
 def event_list(request):
@@ -42,12 +99,10 @@ def event_create(request):
     return render(request, 'benvoplanify/event_form.html', {'form': form})
 
 def event_detail(request,id):
-    """ Affiche les détails d'un événement """
     event = get_object_or_404(Event, id=id)
     return render(request, 'benvoplanify/detail.html', {'event': event})
 
 def event_delete(request, id):
-    """ Supprime un événement """
     event = get_object_or_404(Event, id=id)
     if request.method == "POST":
         event.delete()
@@ -55,7 +110,6 @@ def event_delete(request, id):
     return render(request, 'benvoplanify/event_confirm_delete.html', {'event': event})
 
 def event_edit(request, id):
-    """ Modifie un événement existant """
     event = get_object_or_404(Event, id=id)
     if request.method == "POST":
         form = EventForm(request.POST, instance=event)
@@ -65,3 +119,32 @@ def event_edit(request, id):
     else:
         form = EventForm(instance=event)
     return render(request, 'benvoplanify/event_form.html', {'form': form})
+
+
+def planning_semaine(request):
+    jours_semaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    heures = list(range(8, 20, 2))
+
+    planning = {jour: {heure: [] for heure in heures} for jour in jours_semaine}
+
+    events = Event.objects.all()
+
+    for event in events:
+        jour = event.start_time.strftime("%A")  
+        jour = jour.capitalize()
+        heure = event.start_time.hour
+        if jour in planning and heure in planning[jour]:
+            planning[jour][heure].append(event)
+
+    context = {
+        'days': jours_semaine,
+        'hours': heures,
+        'planning': planning,
+    }
+    return render(request, 'benvoplanify/planning_semaine.html', context)
+
+def test_view(resquest):
+    return render(resquest, 'benvoplanify/test.html')
+
+def success(request):
+    return render(request, 'benvoplanify/success.html')

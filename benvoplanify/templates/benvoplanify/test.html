@@ -1,0 +1,5 @@
+{% load custom_tags %}
+
+{% with test_dict={"a": "Hello", "b": "Salut"} %}
+    {{ test_dict|get_item:"a" }}
+{% endwith %}

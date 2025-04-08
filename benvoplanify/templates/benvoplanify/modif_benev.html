@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier vos informations</title>
+</head>
+<body>
+    <h1>Modifier vos informations</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Mettre à jour</button>
+    </form>
+
+    <a href="{% url 'espace_perso.html' %}">Retour à l'espace personnel</a>
+</body>
+</html>
