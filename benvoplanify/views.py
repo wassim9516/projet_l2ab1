@@ -19,7 +19,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            return redirect('espace_perso')  
+            return redirect('espcace_perso')  
     else:
         form = AuthenticationForm()
 
@@ -52,7 +52,7 @@ def register(request):
 
 
 @login_required
-def modifier_benevole(request):
+def modif_benev(request):
     """ Modif les informations utilisateur """
     user = request.user
     benevole = Benevole.objects.get(user=user)
@@ -65,7 +65,7 @@ def modifier_benevole(request):
     else:
         form = BenevoleForm(instance=benevole)
 
-    return render(request, 'benvoplanify/modifier_benevole.html', {'form': form})
+    return render(request, 'benvoplanify/modif_benev.html', {'form': form})
 
 
 @login_required
@@ -77,12 +77,12 @@ def espace_perso(request):
     context = {
         'benevole': benevole,
     }
-    return render(request, 'benvoplanify/espace_perso.html', context)
+    return render(request, 'benvoplanify/espcace_perso.html', context)
 
 
 def event_list(request):
-    events = Event.objects.all()  # Récupère tous les événements
-    paginator = Paginator(events, 6)  # 6 événements par page
+    events = Event.objects.all()  
+    paginator = Paginator(events, 6)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -123,7 +123,7 @@ def event_edit(request, id):
 
 def planning_semaine(request):
     jours_semaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
-    heures = list(range(8, 20, 2))
+    heures = list(range(8, 20, 1))
 
     planning = {jour: {heure: [] for heure in heures} for jour in jours_semaine}
 
@@ -148,3 +148,9 @@ def test_view(resquest):
 
 def success(request):
     return render(request, 'benvoplanify/success.html')
+
+def generer_planning(request):
+    return render(request,'benvoplanify/generer_planning.html')
+
+
+

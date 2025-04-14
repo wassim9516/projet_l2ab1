@@ -13,7 +13,8 @@ urlpatterns = [
     path('test/', views.test_view, name='test_views'),
     path('register/', views.register, name='register'),
     path('success/', views.success, name='success'),
-    path('espace-personnel/', views.espace_perso, name='espace_perso'),
-    path('modifier-benevole/',views.modifier_benevole, name='modifier_benevole'),
+    path('espace-personnel/', views.espace_perso, name='espcace_perso'),
+    path('modifier-benevole/',views.modif_benev, name='modif_benev'),
     path('login/',views.login_view, name='login'),
+    path('generer_planning/',views.generer_planning,name='generer_planning'),
 ]
