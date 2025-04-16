@@ -6,7 +6,7 @@ from benvoplanify import views  # Importation de views depuis l'application 'pla
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', lambda request: redirect('event_list')), 
+    path('', lambda request: redirect('home_view')), 
     path('admin/', admin.site.urls),
     path('benvoplanify/', include('benvoplanify.urls')),
 ]

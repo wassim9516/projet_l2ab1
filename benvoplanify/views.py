@@ -1,4 +1,3 @@
-# planning/views.py
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from os import login_tty
@@ -6,22 +5,28 @@ from django.shortcuts import render, redirect,get_object_or_404
 from .models import Event, Benevole
 from .forms import EventForm, BenevoleForm,Benevole
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login as auth_login, authenticate
+from django.contrib.auth import login as auth_login, authenticate,logout as auth_logout
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserRegistrationForm
+from .forms import CustomAuthenticationForm
+
+def logout_view(request):
+    """ Déconnexion de l'utilisateur """
+    auth_logout(request)
+    return redirect('home_view') 
 
 def login_view(request):
     """ page de connexion """
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            return redirect('espcace_perso')  
+            return redirect('espace_perso')  
     else:
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
 
     return render(request, 'benvoplanify/login.html', {'form': form})
 
@@ -31,9 +36,7 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()  # Création de l'utilisateur
-            
-            # Création du profil Benevole lié à l'utilisateur
+            user = form.save()  
             Benevole.objects.create(
                 user=user,
                 nom=form.cleaned_data['nom'],
@@ -41,8 +44,6 @@ def register(request):
                 email=form.cleaned_data['email'],
                 date_naiss=form.cleaned_data['date_naiss'],
             )
-
-            # Connexion automatique après inscription
             auth_login(request, user)
             return redirect('success')
     else:
@@ -77,7 +78,7 @@ def espace_perso(request):
     context = {
         'benevole': benevole,
     }
-    return render(request, 'benvoplanify/espcace_perso.html', context)
+    return render(request, 'benvoplanify/espace_perso.html', context)
 
 
 def event_list(request):
@@ -151,6 +152,9 @@ def success(request):
 
 def generer_planning(request):
     return render(request,'benvoplanify/generer_planning.html')
+
+def home_view(request):
+    return render(request,'benvoplanify/home.html')
 
 
 
