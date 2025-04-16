@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,6 +20,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative; /* Ajouté pour permettre le positionnement absolu */
+    }
+
+    /* Style pour le logo */
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      height: 80px;  /* Petite taille */
+      width: auto;
+      border-radius: 30%;
     }
 
     .container {
@@ -76,6 +88,9 @@
   </style>
 </head>
 <body>
+  <!-- Logo -->
+  <img src="{% static 'image/logo.jpeg' %}" alt="Logo" class="logo">
+  
   <div class="container">
     <h1>Bienvenue sur Benvoplanify</h1>
     <p>Organisez votre semaine facilement et efficacement.</p>
