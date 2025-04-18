@@ -1,20 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 
-    
-
-class Event(models.Model):
-    title       = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    start_time  = models.DateTimeField()
-    end_time    = models.DateTimeField()
-    user        = user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    location    = models.CharField(max_length=255,blank=True, null=True)
-    def __str__(self):
-        return f"{self.title} ({self.start_time} - {self.end_time}) {self.location}"
 
 
 class CustomUserManager(BaseUserManager):
@@ -35,25 +24,24 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    nom = models.CharField(max_length=50)
-    prenom = models.CharField(max_length=50)
+    nom = models.CharField(max_length=255)
+    prenom = models.CharField(max_length=255)
     date_naiss = models.DateField()
-
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
-    USERNAME_FIELD = 'email'  
-    REQUIRED_FIELDS = ['nom', 'prenom', 'date_naiss']  
-
+    
     objects = CustomUserManager()
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['nom', 'prenom', 'date_naiss']
+
     def __str__(self):
-        return f"{self.prenom} {self.nom}"
+        return self.email
 
 
 class Benevole(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Relation 1-1 avec CustomUser
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
