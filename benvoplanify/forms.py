@@ -1,9 +1,26 @@
 from django import forms
-from .models import Benevole
+from .models import Benevole,Indisponibilite
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Message
 
 User = get_user_model()
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['receiver', 'content']
+        widgets = {
+            'receiver': forms.Select(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+
+class IndisponibiliteForm(forms.ModelForm):
+    class Meta:
+        model = Indisponibilite
+        fields = ['jour', 'creneau']
+
 
 class BenevoleForm(forms.ModelForm):
     class Meta:

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -18,6 +19,15 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+    
+    .logo {
+      position: absolute;
+      top: 90px;
+      left: 20px;
+      height: 80px;  /* Petite taille */
+      width: auto;
+      border-radius: 30%;
     }
 
     header {
@@ -66,22 +76,36 @@
       font-size: 2.5rem;
       text-align: center;
     }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+
+
   </style>
 </head>
 <body>
+  <img src="{% static 'image/logo.jpeg' %}" alt="Logo" class="logo">
 
   <header>
     <div class="left-text">{{ benevole.prenom }} {{ benevole.nom }}</div>
     <nav class="menu">
       <a href="{% url 'modif_benev' %}">Mes infos</a>
       <a href="{% url 'logout' %}">Déconnexion</a>
-      <a href="{% url 'login' %}">Messagerie</a>
-      <a href="{% url 'login' %}">Saisie heures</a>
+      <a href="{% url 'messagerie' %}">Messagerie</a>
+      <a href="{% url 'indisponibilite_view' %}">Saisie</a>
     </nav>
   </header>
 
   <main>
-    <h1>Bienvenue sur votre espace personnel</h1>
+    <h1>Bienvenue sur votre espace personnel<br><br>
+      <a href="{% url 'emploi_du_temps_view' %}">Planning</a></h1>
   </main>
 
 </body>

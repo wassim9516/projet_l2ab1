@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,6 +20,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      height: 80px;  /* Petite taille */
+      width: auto;
+      border-radius: 30%;
     }
 
     .form-container {
@@ -80,6 +89,7 @@
   </style>
 </head>
 <body>
+  <img src="{% static 'image/logo.jpeg' %}" alt="Logo" class="logo">
 
   <div class="form-container">
     <h1>Inscription - Bénévole</h1>
