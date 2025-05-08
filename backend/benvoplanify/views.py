@@ -5,9 +5,23 @@ from .models import  Benevole,JOURS,CRENEAUX,Indisponibilite,EmploiDuTemps,Messa
 from django.forms import modelformset_factory
 from .forms import BenevoleForm,CustomUserRegistrationForm,CustomAuthenticationForm,MessageForm
 from django.contrib import messages
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import BenevoleSerializer
 
 User = get_user_model()
+
+@api_view(['GET'])
+def benevoles_list(request):
+    benevoles = Benevole.objects.all()
+    serializer = BenevoleSerializer(benevoles, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def hello(request):
+    return Response({"message": "Bonjour depuis Django !"})
+
+
 
 @login_required
 def emploi_du_temps_view(request):

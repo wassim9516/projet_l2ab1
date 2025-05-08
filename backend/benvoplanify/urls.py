@@ -13,4 +13,6 @@ urlpatterns = [
     path('indisponibilites/',views.indisponibilite_view, name='indisponibilite_view'),
     path('emploi-du-temps/', views.emploi_du_temps_view, name='emploi_du_temps_view'),
     path('messagerie/', views.messagerie, name='messagerie'),
+    path('api/hello/',views.hello,name='hello'),
+    path('api/benevoles/',views.benevoles_list,name='benvevoles_list')
 ]
